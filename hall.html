@@ -3,20 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Sister Margaret's Diary</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>
-        Who are you?
-    </p>
+    <div class="diary-area">
+        <h1> The Hall</h1>
 
-    <p>
-        If I may begin from the end, here is something you need to know... I'm dead! I died in this monastery in 1901 and you
-        will help me to redeem my soul, I'm stuck here, for some reason.
-        <br><br>
-        Someone killed me, but I cannot give you a lot of information now. You will have to navigate through other rooms and
-        meet other souls.
-    </p>
+        <div class="image">
+            <img id="image" width="400px" src="./img/map.webp">
+            <br><br><br>
+            <button class="nav-button">
+                left
+            </button>
 
+            <button class="nav-button">
+                right
+            </button>
+        </div>
 
+        <p id="text">
+            If I may begin from the end, here is something you need to know... I'm dead! I died in this monastery in 1901 and you
+            will help me to redeem my soul, I'm stuck here, for some reason.
+            <br><br>
+            Someone killed me, but I cannot give you a lot of information now. You will have to navigate through other rooms...
+        </p>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

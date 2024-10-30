@@ -1,0 +1,76 @@
+body{
+    background: black;
+}
+
+.diary-area{
+    padding: 0px 100px 0px 100px;
+}
+
+.image{
+    text-align: center;
+}
+
+@font-face {
+    font-family: 'OldEnglish';
+    src: url('font/oldeenglish.ttf') format('truetype'); /* or .woff */
+}
+
+@font-face {
+    font-family: 'WhoAsks';
+    src: url('font/whoasks.ttf') format('truetype'); /* or .woff */
+}
+
+h1 {
+    text-align: center;
+    font-family: 'OldEnglish', serif;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 50pt;
+}
+
+p{
+    font-family: 'WhoAsks', sans-serif;
+    color: darkred;
+    font-size: 40pt;
+}
+
+.portal-area{
+    text-align: center;
+    padding-top: 50px;
+}
+
+.door-button {
+    width: 500px;
+    height: 300px;
+    background-color: #000000; /* Wood-like color */
+    border: none;
+    color: white;
+    font-size: 150px;
+    font-family: OldEnglish;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.door-button:hover {
+    color: darkred;
+    font-family: WhoAsks;
+}
+
+.nav-button {
+    margin-left: 50px;
+    margin-right: 50px;
+    width: 100px;
+    height: 50px;
+    background-color: #000000; /* Wood-like color */
+    border: none;
+    color: white;
+    font-size: 50px;
+    font-family: OldEnglish;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.nav-button:hover {
+    color: darkred;
+}
