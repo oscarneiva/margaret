@@ -1,5 +1,6 @@
 body{
     background: black;
+    transition: background-image 0.3s ease-in-out;
 }
 
 .diary-area{
@@ -12,12 +13,12 @@ body{
 
 @font-face {
     font-family: 'OldEnglish';
-    src: url('font/oldeenglish.ttf') format('truetype'); /* or .woff */
+    src: url('font/oldeenglish.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'WhoAsks';
-    src: url('font/whoasks.ttf') format('truetype'); /* or .woff */
+    src: url('font/whoasks.ttf') format('truetype');
 }
 
 h1 {
@@ -41,7 +42,7 @@ p{
 .door-button {
     width: 500px;
     height: 300px;
-    background-color: #000000; /* Wood-like color */
+    background-color: #000000;
     border: none;
     color: white;
     font-size: 150px;
@@ -61,7 +62,7 @@ p{
     margin-right: 50px;
     width: 100px;
     height: 50px;
-    background-color: #000000; /* Wood-like color */
+    background-color: #000000;
     border: none;
     color: white;
     font-size: 50px;
