@@ -1,16 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Sister Margaret's Diary</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sister Margaret's Diary</title>
+<style>
+@font-face { font-family: 'OldEnglish'; src: url('font/oldeenglish.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'WhoAsks'; src: url('font/whoasks.ttf') format('truetype'); font-display: swap; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: black; }
+body { min-height: 100vh; color: rgba(255, 255, 255, 0.8); }
+[hidden] { display: none !important; }
+
+/* ---------- Title screen ---------- */
+.portal-area { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.door-button {
+  background: black; border: none; color: white; cursor: pointer;
+  font-family: 'OldEnglish', serif; font-size: clamp(64px, 12vw, 150px); line-height: 1.1;
+  padding: 0.2em 0.4em; text-align: center;
+}
+.door-button:hover, .door-button:focus-visible { color: darkred; font-family: 'WhoAsks', sans-serif; outline: none; }
+
+/* ---------- Rooms ---------- */
+.diary-area { max-width: 1000px; margin: 0 auto; padding: 16px clamp(16px, 6vw, 100px) 80px; }
+h1 {
+  text-align: center; font-family: 'OldEnglish', serif; font-weight: normal;
+  color: rgba(255, 255, 255, 0.8); font-size: clamp(34px, 6vw, 50pt); margin: 0.3em 0 0;
+}
+.narrator { text-align: center; font-family: 'OldEnglish', serif; color: darkred; font-size: clamp(20px, 3vw, 30px); margin: 0.2em 0 20px; }
+.image { text-align: center; }
+.image img { max-width: min(500px, 100%); max-height: 45vh; width: auto; height: auto; }
+.nav-row { display: flex; justify-content: center; gap: clamp(40px, 10vw, 100px); margin: 20px 0 16px; }
+.nav-button {
+  width: 100px; height: 60px; background: black; border: none; color: white; cursor: pointer;
+  font-family: 'OldEnglish', serif; font-size: 50px; line-height: 1;
+}
+.nav-button:hover, .nav-button:focus-visible { color: darkred; outline: none; }
+.story {
+  font-family: 'WhoAsks', sans-serif; color: darkred; font-size: clamp(22px, 3.4vw, 40pt);
+  line-height: 1.25; white-space: pre-line; cursor: pointer; min-height: 2em;
+}
+
+/* ---------- Code window ---------- */
+.code-window {
+  max-width: 480px; margin: 0 auto 24px; padding: 14px 18px 12px;
+  border: 1px solid darkred; border-radius: 6px; background: #0d0000;
+  font-family: Georgia, 'Times New Roman', serif; color: #c9c2c2;
+}
+.code-window h2 { margin: 0 0 4px; font-family: 'OldEnglish', serif; font-weight: normal; font-size: 28px; color: white; }
+.code-help { margin: 0 0 10px; font-size: 15px; line-height: 1.4; }
+.code-form { display: flex; gap: 8px; }
+.code-form input {
+  flex: 1; min-width: 0; padding: 8px 10px; border-radius: 4px; border: 1px solid #5a1a1a;
+  background: black; color: white; font: 22px/1.2 'Courier New', monospace; letter-spacing: 0.15em;
+}
+.code-form input:focus { outline: 2px solid darkred; outline-offset: 1px; }
+.code-form button {
+  padding: 6px 16px; border: none; border-radius: 4px; background: darkred; color: white; cursor: pointer;
+  font-family: 'OldEnglish', serif; font-size: 24px;
+}
+.code-form button:hover:not(:disabled), .code-form button:focus-visible { background: #b00000; outline: none; }
+.code-form button:disabled, .code-form input:disabled { opacity: 0.5; cursor: default; }
+.code-error { margin: 6px 0 0; min-height: 0; font-size: 14px; color: #ff7a7a; }
+.code-error:empty { display: none; }
+.code-trace { margin-top: 8px; font-size: 15px; line-height: 1.7; }
+.code-trace:empty { display: none; }
+.code-trace .digit { font-family: 'Courier New', monospace; color: #ff5c5c; font-weight: bold; padding: 0 2px; }
+.code-trace .step { animation: appear 0.35s ease-out both; }
+.code-result { margin: 6px 0 0; color: white; }
+
+/* ---------- Endings ---------- */
+.ending { position: fixed; inset: 0; z-index: 10; background: black; overflow-y: auto; animation: fade 1.2s ease-out both; }
+.ending.win h1 { color: white; }
+.ending.lose h1 { color: darkred; font-family: 'WhoAsks', sans-serif; }
+.ending.lose img { filter: brightness(0.4) sepia(0.6) hue-rotate(-30deg) saturate(1.6); }
+.again-button {
+  background: black; border: 1px solid darkred; border-radius: 6px; color: white; cursor: pointer;
+  font-family: 'OldEnglish', serif; font-size: 36px; padding: 6px 28px;
+}
+.again-button:hover, .again-button:focus-visible { color: darkred; border-color: white; outline: none; }
+
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ending, .code-trace .step { animation: none; } }
+</style>
 </head>
 <body>
-    <div class="portal-area">
-    <button class="door-button" onclick="window.location.href='hall.html'">
-            Margaret's Diary
-    </button>
-    </div>
-    <script src="script.js"></script>
+
+<!-- Title screen -->
+<div id="portal" class="portal-area">
+  <button class="door-button" id="enter">Margaret's Diary</button>
+</div>
+
+<!-- One template for every room -->
+<main id="room" class="diary-area" hidden>
+  <h1 id="room-title"></h1>
+  <p class="narrator" id="room-narrator"></p>
+  <div class="image"><img id="room-img" src="" alt=""></div>
+
+  <div class="nav-row">
+    <button class="nav-button" data-digit="0" aria-label="Go through door 0">0</button>
+    <button class="nav-button" data-digit="1" aria-label="Go through door 1">1</button>
+  </div>
+
+  <section class="code-window" aria-labelledby="code-title">
+    <h2 id="code-title">Margaret's code</h2>
+    <p class="code-help">Her soul starts where her body lies and follows your code, one digit at a time.</p>
+    <form class="code-form" id="code-form" novalidate>
+      <input id="code-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false"
+             maxlength="30" placeholder="0 1 0 1 ..." aria-label="Binary code">
+      <button type="submit" id="code-button">Speak</button>
+    </form>
+    <p class="code-error" id="code-error" role="alert"></p>
+    <div class="code-trace" id="code-trace" aria-live="polite"></div>
+  </section>
+
+  <p class="story" id="room-text" title="Click to show all the text"></p>
+</main>
+
+<!-- Win / lose screen -->
+<div id="ending" class="ending" hidden role="dialog" aria-modal="true" aria-labelledby="ending-title">
+  <div class="diary-area">
+    <h1 id="ending-title"></h1>
+    <p class="narrator" id="ending-sub"></p>
+    <div class="image"><img id="ending-img" src="" alt=""></div>
+    <p class="story" id="ending-text"></p>
+    <div class="nav-row"><button class="again-button" id="again">Play again</button></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   GAME SETTINGS (teacher: change these lines to change the puzzle)
+   ===================================================================== */
+const SOUL_STARTS_IN = 'lab';             // where Margaret's body lies: the code starts here
+const WIN_ROOM       = 'church';          // a code that ENDS here wins   (shortest: 0001)
+const TRAP_ROOM      = 'ignatius_office'; // a code that ENDS here loses  (shortest: 000111)
+const SHOW_TRACE     = true;              // show each room the soul walks through
+const TYPE_SPEED     = 40;                // milliseconds per letter in the typewriter text
+
+/* =====================================================================
+   THE MAP: every room says where door 0 and door 1 lead  (next: [0, 1])
+   ===================================================================== */
+const ROOMS = {
+  hall: {
+    title: 'The Hall', narrator: 'Sister Margaret',
+    img: 'img/map2.webp', alt: 'An old floor plan of the monastery',
+    next: ['library', 'lucy_room'],
+    text: `If I may begin from the end... I'm dead! I died in this monastery in 1901 and I need help. Someone killed me, but I don't know who it was.
+
+This portal has all the rooms of the monastery and a code to navigate through the rooms. Draw a map with all the rooms and the connections between them. I will need your help to know the path to the father's office.
+
+I'm not the only one here...`
+  },
+  margaret_room: {
+    title: "Sister Margaret's Room", narrator: 'Sister Margaret',
+    img: 'img/margaret_room.avif', alt: "Sister Margaret's room",
+    next: ['church_basement', 'lucy_room'],
+    text: `It seems that you have found my room. I had a lot of happy moments here with my advanced studies in languages and machines.
+
+The father wasn't so happy with my research, though. He could not understand what my research was about and made some bad assumptions about my goals.`
+  },
+  lucy_room: {
+    title: "Sister Lucy's Room", narrator: 'Sister Lucy',
+    img: 'img/lucy_room.jpeg', alt: "Sister Lucy's room",
+    next: ['lucy_closet', 'hall'],
+    text: `What are you doing here? This place is haunted by many sad souls.
+
+I suggest that you leave before they convince you to give some "help"...`
+  },
+  lucy_closet: {
+    title: "Sister Lucy's Closet", narrator: 'Sister Lucy',
+    img: 'img/closet.jpg', alt: "Sister Lucy's closet",
+    next: ['lucy_room', 'lucy_closet'],
+    text: `Margaret was a good friend... Was!
+
+She was very ambitious with her experiments, trying to create a language to control machines. She believed that the dead could speak with us through electromagnetic waves, and that creating a machine language would make it possible to speak with the dead.
+
+She went too far with her research, and her soul is very disturbed.`
+  },
+  ignatius_room: {
+    title: "Father Ignatius' Room", narrator: 'Father Ignatius',
+    img: 'img/ignatius_room.jpg', alt: "Father Ignatius' room",
+    next: ['church', 'ignatius_office'],
+    text: `Margaret has a compulsion for power. She was brilliant and a devoted nun, but her obsession with the dead made her a manipulative and compulsive person.
+
+She is still in this monastery, possessed, and trying to drag other souls to hell with her.`
+  },
+  ignatius_office: {
+    title: "Father Ignatius' Office", narrator: 'Father Ignatius',
+    img: 'img/office.jpg', alt: "Father Ignatius' office",
+    next: ['ignatius_office', 'ignatius_room'],
+    text: `I didn't kill Margaret. She was killed by demonic forces during her rituals.
+
+The soul of Margaret has to be guided from where her body is to a sacred place in this monastery.`
+  },
+  library: {
+    title: 'Library', narrator: 'The Librarian',
+    img: 'img/library.avif', alt: 'The monastery library',
+    next: ['margaret_room', 'lab'],
+    text: `A long time ago, a nun would frequently come here to get some books about machines and the occult. She died in the room next door, where she had a laboratory.`
+  },
+  lab: {
+    title: "Margaret's Laboratory", narrator: 'The Librarian',
+    img: 'img/lab.jpg', alt: "Margaret's laboratory",
+    next: ['library', 'lab'],
+    text: `I found Margaret dead in this room, and the father hid her body in the attic above it.
+
+She had a very controversial project: creating a language to speak with machines and with the other side. Father Ignatius wasn't very happy about her project. He was very worried about this strange language that Margaret was creating.`
+  },
+  church: {
+    title: 'Church', narrator: 'Father Ignatius',
+    img: 'img/church.avif', alt: 'The monastery church',
+    next: ['church_basement', 'ignatius_room'],
+    text: `This is a sacred place! Do not bring blasphemy to this church!
+
+This place used to be harmonious, but one nun's search for power ruined everything!`
+  },
+  church_basement: {
+    title: 'Church Basement', narrator: 'Sister Margaret',
+    img: 'img/basement.jpg', alt: 'The church basement',
+    next: ['margaret_room', 'church'],
+    text: `This is where I used to hide some of my books. Father Ignatius would frequently try to confiscate them. He was very jealous of my research.`
+  }
+};
+
+const ENDINGS = {
+  win: {
+    title: 'You won!', sub: 'Margaret rests in peace',
+    img: 'img/church.avif', alt: 'The monastery church',
+    text: `The church bells ring by themselves at midnight.
+
+Margaret's soul left her body in the attic and followed your code, room by room, until it reached the church, the sacred place of this monastery. The cold leaves the corridors and the candles stop flickering.
+
+After more than a hundred years, Sister Margaret is finally at peace.
+
+But down in her laboratory, one of her machines is still blinking... 0... 1... 0...`
+  },
+  lose: {
+    title: 'You lost!', sub: 'You fell into the trap',
+    img: 'img/office.jpg', alt: "Father Ignatius' office, with the candles out",
+    text: `You gave Margaret exactly what she asked for: the path to the father's office.
+
+Sister Lucy warned you. The candles go out one by one, and a cold laugh echoes through the corridors. Margaret was never looking for peace.
+
+Another soul now belongs to the monastery...`
+  }
+};
+
+/* =====================================================================
+   GAME ENGINE (no need to change anything below)
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+let typingTimer = null;
+let currentRoom = null;
+let running = false;
+
+function typewriter(el, text) {
+  clearTimeout(typingTimer);
+  el.textContent = '';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = text; return; }
+  let i = 0;
+  (function type() {
+    if (i < text.length) { el.textContent += text.charAt(i++); typingTimer = setTimeout(type, TYPE_SPEED); }
+  })();
+  el.onclick = () => { clearTimeout(typingTimer); el.textContent = text; };
+}
+
+function showRoom(id) {
+  const room = ROOMS[id];
+  if (!room) { showPortal(); return; }
+  currentRoom = id;
+  $('portal').hidden = true;
+  $('room').hidden = false;
+  $('room-title').textContent = room.title;
+  $('room-narrator').textContent = room.narrator;
+  $('room-img').src = room.img;
+  $('room-img').alt = room.alt;
+  document.title = room.title + " - Sister Margaret's Diary";
+  window.scrollTo(0, 0);
+  typewriter($('room-text'), room.text);
+}
+
+function showPortal() {
+  clearTimeout(typingTimer);
+  currentRoom = null;
+  $('room').hidden = true;
+  $('portal').hidden = false;
+  document.title = "Sister Margaret's Diary";
+}
+
+function route() {
+  const id = location.hash.slice(1);
+  id ? showRoom(id) : showPortal();
+}
+
+/* ----- Navigation with the 0 and 1 doors (the URL keeps the room, so Back works) ----- */
+$('enter').onclick = () => { location.hash = 'hall'; };
+document.querySelectorAll('.nav-button').forEach(btn => {
+  btn.onclick = () => { location.hash = ROOMS[currentRoom].next[+btn.dataset.digit]; };
+});
+window.addEventListener('hashchange', route);
+
+/* ----- The code window ----- */
+function walk(code) {
+  let room = SOUL_STARTS_IN;
+  const steps = [{ room }];
+  for (const digit of code) {
+    room = ROOMS[room].next[+digit];
+    steps.push({ digit, room });
+  }
+  return steps;
+}
+
+function addTrace(html, cls = 'step') {
+  const span = document.createElement('span');
+  span.className = cls;
+  span.innerHTML = html;
+  $('code-trace').appendChild(span);
+  span.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function setRunning(on) {
+  running = on;
+  $('code-input').disabled = on;
+  $('code-button').disabled = on;
+}
+
+$('code-input').addEventListener('input', () => { $('code-error').textContent = ''; });
+
+$('code-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (running) return;
+  const code = $('code-input').value.replace(/\s+/g, '');
+  if (code === '') { $('code-error').textContent = 'Type a code first.'; return; }
+  if (!/^[01]+$/.test(code)) { $('code-error').textContent = 'Only 0 and 1 can be spoken here.'; return; }
+
+  $('code-error').textContent = '';
+  $('code-trace').innerHTML = '';
+  setRunning(true);
+
+  const steps = walk(code);
+  const end = steps[steps.length - 1].room;
+  const delay = Math.max(150, 550 - code.length * 15);
+
+  if (SHOW_TRACE) addTrace(ROOMS[steps[0].room].title);
+  else addTrace('Margaret\'s soul begins to move...');
+
+  let i = 1;
+  (function next() {
+    if (SHOW_TRACE && i < steps.length) {
+      addTrace(` <span class="digit">${steps[i].digit}</span>&rarr; ${ROOMS[steps[i].room].title}`);
+      i++;
+      setTimeout(next, delay);
+      return;
+    }
+    finish(end);
+  })();
+});
+
+function finish(end) {
+  const result = document.createElement('p');
+  result.className = 'code-result step';
+  $('code-trace').appendChild(result);
+  setTimeout(() => result.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 0);
+
+  if (end === WIN_ROOM || end === TRAP_ROOM) {
+    result.textContent = end === WIN_ROOM ? 'The bells begin to ring...' : 'The candles flicker...';
+    setTimeout(() => showEnding(end === WIN_ROOM ? 'win' : 'lose'), 1200);
+  } else {
+    result.textContent = `Her soul stopped in ${ROOMS[end].title}. Nothing happened... Try another code.`;
+    setRunning(false);
+  }
+}
+
+function showEnding(kind) {
+  const e = ENDINGS[kind];
+  clearTimeout(typingTimer);
+  $('ending').className = 'ending ' + kind;
+  $('ending-title').textContent = e.title;
+  $('ending-sub').textContent = e.sub;
+  $('ending-img').src = e.img;
+  $('ending-img').alt = e.alt;
+  $('ending').hidden = false;
+  $('ending').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  typewriter($('ending-text'), e.text);
+  $('again').focus();
+}
+
+$('again').onclick = () => {
+  clearTimeout(typingTimer);
+  $('ending').hidden = true;
+  document.body.style.overflow = '';
+  $('code-input').value = '';
+  $('code-trace').innerHTML = '';
+  setRunning(false);
+  history.pushState(null, '', location.pathname);
+  showPortal();
+};
+
+route();
+</script>
 </body>
 </html>
